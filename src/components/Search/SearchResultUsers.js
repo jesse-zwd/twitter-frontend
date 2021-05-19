@@ -18,8 +18,8 @@ const SearchResultUsers = ({ loading, users }) => {
 
 	return (
 		<Wrapper>
-			{users?.searchByUser?.length ? (
-				users.searchByUser.map(user => <User key={user.id} user={user} />)
+			{users?.length ? (
+				users.map(user => <User key={user.id} user={user} />)
 			) : (
 				<CustomResponse text="No user found, try a different search" />
 			)}

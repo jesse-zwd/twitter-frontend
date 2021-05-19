@@ -18,8 +18,8 @@ const SearchResultTweets = ({ tweets, loading }) => {
 
 	return (
 		<Wrapper>
-			{tweets?.searchByTweet?.length ? (
-				tweets.searchByTweet.map(tweet => (
+			{tweets?.length ? (
+				tweets.map(tweet => (
 					<Tweet key={tweet.id} tweet={tweet} />
 				))
 			) : (

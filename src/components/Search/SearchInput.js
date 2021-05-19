@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import useInput from "../../hooks/useInput";
 import SearchResult from "./SearchResult";
+import http from "../../services/http";
 
 const Wrapper = styled.div`
   margin: 1rem 0;
@@ -30,24 +31,13 @@ const Wrapper = styled.div`
 const SearchInput = () => {
   const term = useInput("");
 
-  // const [
-  //   searchByTag,
-  //   { data: searchTagData, loading: searchTagLoading },
-  // ] = useLazyQuery(SEARCH_BY_TAG);
-  const searchTagData = {}
-  const searchTagLoading = false
-  // const [
-  //   searchByTweet,
-  //   { data: searchTweetData, loading: searchTweetLoading },
-  // ] = useLazyQuery(SEARCH_BY_TWEET);
-  const searchTweetData = {}
-  const searchTweetLoading = false
-  // const [
-  //   searchByUser,
-  //   { data: searchUserData, loading: searchUserLoading },
-  // ] = useLazyQuery(SEARCH_BY_USER);
-  const searchUserData = {}
-  const searchUserLoading = false
+  const [searchTagData, setSearchTagData] = useState([]);
+  const [searchTagLoading, setSearchTagLoading] = useState(false);
+  const [searchTweetData, setSearchTweetData] = useState([]);
+  const [searchTweetLoading, setSearchTweetLoading] = useState(false);
+  const [searchUserData, setSearchUserData] = useState([]);
+  const [searchUserLoading, setSearchUserLoading] = useState(false);
+
   const handleSearch = async (e) => {
     e.preventDefault();
 
@@ -55,13 +45,27 @@ const SearchInput = () => {
       return toast.error("Enter something to search");
     }
 
-    // try {
-    //   await searchByTag({ variables: { term: term.value } });
-    //   await searchByTweet({ variables: { term: term.value } });
-    //   await searchByUser({ variables: { term: term.value } });
-    // } catch (err) {
-    //   displayError(err);
-    // }
+    try {
+      // search
+      const searchItem = term.value;
+      setSearchTagLoading(true);
+      setSearchUserLoading(true);
+      setSearchTweetLoading(true);
+      http.get(`api/v1/searchUser/${searchItem}`).then((res) => {
+        setSearchUserData(res.data.data);
+        setSearchUserLoading(false);
+      });
+      http.get(`api/v1/searchTweetByTags/${searchItem}`).then((res) => {
+        setSearchTagData(res.data.data);
+        setSearchTagLoading(false);
+      });
+      http.get(`api/v1/searchTweetByText/${searchItem}`).then((res) => {
+        setSearchTweetData(res.data.data);
+        setSearchTweetLoading(false);
+      });
+    } catch (err) {
+      toast.error(err);
+    }
     term.setValue("");
   };
 
